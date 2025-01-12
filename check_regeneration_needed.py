@@ -1,7 +1,6 @@
 import subprocess
 import sys
 from datetime import datetime, timezone
-import json
 import re
 import vdf
 

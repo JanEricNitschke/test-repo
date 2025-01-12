@@ -4,6 +4,8 @@ import argparse
 import os
 import re
 from dataclasses import dataclass
+from pathlib import Path
+import json
 
 VentsValue = str | int | float | bool | tuple[float, ...]
 
@@ -23,6 +25,36 @@ class Spawns:
 
     CT: list[Position]
     T: list[Position]
+
+    def to_dict(self) -> dict[str, list[dict[str, float]]]:
+        """Converts the spawns to a dictionary."""
+        return {
+            "CT": [{"x": ct.x, "y": ct.y, "z": ct.z} for ct in self.CT],
+            "T": [{"x": t.x, "y": t.y, "z": t.z} for t in self.T],
+        }
+
+    def to_json(self, path: str | Path) -> None:
+        """Writes the spawns data to a JSON file.
+
+        Args:
+            path: Path to the JSON file to write.
+        """
+        spawns_dict = self.to_dict()
+        with open(path, "w", encoding="utf-8") as json_file:
+            json.dump(spawns_dict, json_file)
+
+    @staticmethod
+    def from_vents_content(vents_content: str) -> "Spawns":
+        """Parse the content of a vents file into Spawns information."""
+        parsed_data = parse_file_to_dict(vents_content)
+
+        return filter_data(parsed_data)
+
+    @staticmethod
+    def from_vents_file(vents_file: str | Path) -> "Spawns":
+        """Parse the content of a vents file into Spawns information."""
+        with open(vents_file) as f:
+            return Spawns.from_vents_content(f.read())
 
 
 def parse_file_to_dict(file_content: str) -> dict[int, dict[str, VentsValue]]:
@@ -114,15 +146,12 @@ def main() -> None:
         print(f"Error: The file '{args.file_path}' does not exist.")
         return
     # Example usage
-    with open(args.file_path) as file:
-        file_content = file.read()
-
-    parsed_data = parse_file_to_dict(file_content)
-
-    filtered_data = filter_data(parsed_data)
-
-    print(filtered_data)
-    print(len(filtered_data.CT), len(filtered_data.T))
+    vent_file = args.file_path
+    output_path = vent_file.with_suffix(".json")
+    spawns_data = Spawns.from_vents_file(vent_file)
+    spawns_data.to_json(path=output_path)
+    print(spawns_data)
+    print(len(spawns_data.CT), len(spawns_data.T))
 
 
 if __name__ == "__main__":

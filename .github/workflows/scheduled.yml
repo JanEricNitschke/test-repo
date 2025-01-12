@@ -1,6 +1,9 @@
 on:
   push:
     branches: [main]
+  schedule:
+    - cron: "49 1 * * *"
+  workflow_dispatch:
 
 jobs:
   test_schedule:
@@ -48,4 +51,6 @@ jobs:
         if: steps.check_time.outcome == 'failure'
         run: |
           echo "No action was needed, skipped regeneration."
-      # - uses: stefanzweifel/git-auto-commit-action@v5
+      - name: Commit regenerated files
+        if: steps.check_time.outcome == 'success'
+        uses: stefanzweifel/git-auto-commit-action@v5

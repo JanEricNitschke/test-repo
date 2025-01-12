@@ -37,6 +37,7 @@ if (Test-Path $sourcePath) {
             # Run the awpy parse-spawns command
             Write-Host "Running awpy parse-spawns on: $newFileName" -ForegroundColor Yellow
             python parse_vents.py $newFileName
+            Remove-Item -Path $newFileName -Force
         } else {
             Write-Host "Error: Expected output file not found for $fileNameWithoutExtension" -ForegroundColor Red
         }
