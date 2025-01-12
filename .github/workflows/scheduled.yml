@@ -22,7 +22,9 @@ jobs:
       - name: Install CS2
         env:
           STEAM_PW: ${{ secrets.STEAM_PW }}
-        run: steamcmd +force_install_dir ./cs_go +login janoutlook $env:STEAM_PW +app_update 730 +quit
+        run: |
+          $csDir = Join-Path (Get-Location) "cs_go"
+          steamcmd +force_install_dir $csDir +login janoutlook $env:STEAM_PW +app_update 730 +quit
       - name: Install Source2Viewer-CLI
         run: |
           Invoke-WebRequest -Uri "https://github.com/ValveResourceFormat/ValveResourceFormat/releases/download/11.1/cli-windows-x64.zip" -OutFile ".\cli-windows-x64.zip"
