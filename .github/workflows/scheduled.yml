@@ -5,7 +5,14 @@ on:
 jobs:
   test_schedule:
     runs-on: windows-latest
+    permissions:
+      # Give the default GITHUB_TOKEN write permission to commit and push the
+      # added or changed files to the repository.
+      contents: write
     steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
@@ -15,10 +22,11 @@ jobs:
       - name: Install CS2
         env:
           STEAM_PW: ${{ secrets.STEAM_PW }}
-        run: steamcmd +force_install_dir ./cs_go +login janoutlook $env:STEAM_PW +app_update 730
+        run: steamcmd +force_install_dir ./cs_go +login janoutlook $env:STEAM_PW +app_update 730 +quit
       - name: Install Source2Viewer-CLI
         run: |
           Invoke-WebRequest -Uri "https://github.com/ValveResourceFormat/ValveResourceFormat/releases/download/11.1/cli-windows-x64.zip" -OutFile ".\cli-windows-x64.zip"
           Expand-Archive -Path .\cli-windows-x64.zip -DestinationPath . -Force
       - name: Extract vents
         run: ./generate-map-spawns.ps1
+      # - uses: stefanzweifel/git-auto-commit-action@v5

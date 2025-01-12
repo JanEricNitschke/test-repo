@@ -1,7 +1,7 @@
 # This script generates .json files containing CS2 .nav information.
 
 # Define the directory containing .vpk files
-$sourcePath = "cs_go\steamapps\common\Counter-Strike Global Offensive\game\csgo\maps"
+$sourcePath = "cs_go\game\csgo\maps"
 
 # Get the current directory where the script is run
 $outputDirectory = (Get-Location).Path
@@ -36,7 +36,7 @@ if (Test-Path $sourcePath) {
 
             # Run the awpy parse-spawns command
             Write-Host "Running awpy parse-spawns on: $newFileName" -ForegroundColor Yellow
-            awpy parse-spawns $newFileName
+            python parse_vents.py $newFileName
         } else {
             Write-Host "Error: Expected output file not found for $fileNameWithoutExtension" -ForegroundColor Red
         }

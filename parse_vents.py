@@ -1,5 +1,7 @@
 """Parse a .vents file as produced by the SourceViewer-CLI."""
 
+import argparse
+import os
 import re
 from dataclasses import dataclass
 
@@ -91,13 +93,37 @@ def filter_data(data: dict[int, dict[str, VentsValue]]) -> Spawns:
 
 
 
-# Example usage
-with open("de_mirage.vents") as file:
-    file_content = file.read()
 
-parsed_data = parse_file_to_dict(file_content)
 
-filtered_data = filter_data(parsed_data)
+def main() -> None:
+    # Create the parser
+    parser = argparse.ArgumentParser(description="Process a file path.")
 
-print(filtered_data)
-print(len(filtered_data.CT), len(filtered_data.T))
+    # Add the file path argument
+    parser.add_argument(
+        "file_path",
+        type=str,
+        help="Path to the input file"
+    )
+
+    # Parse the arguments
+    args = parser.parse_args()
+
+    # Validate the file path
+    if not os.path.isfile(args.file_path):
+        print(f"Error: The file '{args.file_path}' does not exist.")
+        return
+    # Example usage
+    with open(args.file_path) as file:
+        file_content = file.read()
+
+    parsed_data = parse_file_to_dict(file_content)
+
+    filtered_data = filter_data(parsed_data)
+
+    print(filtered_data)
+    print(len(filtered_data.CT), len(filtered_data.T))
+
+
+if __name__ == "__main__":
+    main()
