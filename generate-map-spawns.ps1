@@ -1,10 +1,10 @@
 # This script generates .json files containing CS2 .nav information.
 
-# Define the directory containing .vpk files
-$sourcePath = "cs_go\game\csgo\maps"
-
 # Get the current directory where the script is run
 $outputDirectory = (Get-Location).Path
+
+# Define the directory containing .vpk files
+$sourcePath = Join-Path -Path $outputDirectory -ChildPath "cs_go\game\csgo\maps"
 
 # Ensure the path exists
 if (Test-Path $sourcePath) {

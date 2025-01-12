@@ -28,5 +28,7 @@ jobs:
           Invoke-WebRequest -Uri "https://github.com/ValveResourceFormat/ValveResourceFormat/releases/download/11.1/cli-windows-x64.zip" -OutFile ".\cli-windows-x64.zip"
           Expand-Archive -Path .\cli-windows-x64.zip -DestinationPath . -Force
       - name: Extract vents
-        run: ./generate-map-spawns.ps1
+        run: |
+          Get-ChildItem -Force
+          ./generate-map-spawns.ps1
       # - uses: stefanzweifel/git-auto-commit-action@v5
