@@ -19,18 +19,33 @@ jobs:
           python-version: "3.11"
       - name: Setup steamcmd
         uses: CyberAndrii/setup-steamcmd@v1
+      - name: Check if there is a need to update.
+        id: check_time
+        env:
+          PYTHONIOENCODING: "utf-8"
+        run: |
+          pip install vdf
+          python update_time.py
+        continue-on-error: true  # Continue the workflow regardless of the exit code
       - name: Install CS2
+        if: steps.check_time.outcome == 'success'
         env:
           STEAM_PW: ${{ secrets.STEAM_PW }}
         run: |
           $csDir = Join-Path (Get-Location) "cs_go"
           steamcmd +force_install_dir $csDir +login janoutlook $env:STEAM_PW +app_update 730 +quit
       - name: Install Source2Viewer-CLI
+        if: steps.check_time.outcome == 'success'
         run: |
           Invoke-WebRequest -Uri "https://github.com/ValveResourceFormat/ValveResourceFormat/releases/download/11.1/cli-windows-x64.zip" -OutFile ".\cli-windows-x64.zip"
           Expand-Archive -Path .\cli-windows-x64.zip -DestinationPath . -Force
       - name: Extract vents
+        if: steps.check_time.outcome == 'success'
         run: |
           Get-ChildItem -Force
           ./generate-map-spawns.ps1
+      - name: No update necessary, but code ran fine
+        if: steps.check_time.outcome == 'failure'
+        run: |
+          echo "No action was needed, skipped regeneration."
       # - uses: stefanzweifel/git-auto-commit-action@v5
