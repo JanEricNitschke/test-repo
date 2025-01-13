@@ -63,7 +63,7 @@ def main():
         sys.exit(0)
     else:
         print("No update since last run.")
-        sys.exit(1)
+        sys.exit(2)
 
 
 if __name__ == "__main__":
