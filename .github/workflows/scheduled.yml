@@ -5,6 +5,13 @@ on:
     - cron: "49 1 * * *"
   workflow_dispatch:
 
+env:
+  SOURCE2_VIEWER_URL: https://github.com/ValveResourceFormat/ValveResourceFormat/releases/download/11.1/cli-windows-x64.zip
+  CS2_APP_ID: 730
+
+permissions:
+  contents: write
+
 jobs:
   test_schedule:
     runs-on: windows-latest
@@ -32,15 +39,13 @@ jobs:
         continue-on-error: true  # Continue the workflow regardless of the exit code
       - name: Install CS2
         if: steps.check_time.outcome == 'success'
-        env:
-          STEAM_PW: ${{ secrets.STEAM_PW }}
         run: |
           $csDir = Join-Path (Get-Location) "cs_go"
-          steamcmd +force_install_dir $csDir +login anonymous +app_update 730 +quit
+          steamcmd +force_install_dir $csDir +login anonymous +app_update ${{ env.CS2_APP_ID }} +quit
       - name: Install Source2Viewer-CLI
         if: steps.check_time.outcome == 'success'
         run: |
-          Invoke-WebRequest -Uri "https://github.com/ValveResourceFormat/ValveResourceFormat/releases/download/11.1/cli-windows-x64.zip" -OutFile ".\cli-windows-x64.zip"
+          Invoke-WebRequest -Uri ${{ env.SOURCE2_VIEWER_URL }} -OutFile ".\cli-windows-x64.zip"
           Expand-Archive -Path .\cli-windows-x64.zip -DestinationPath . -Force
       - name: Extract vents
         if: steps.check_time.outcome == 'success'
@@ -53,4 +58,9 @@ jobs:
           echo "No action was needed, skipped regeneration."
       - name: Commit regenerated files
         if: steps.check_time.outcome == 'success'
-        uses: stefanzweifel/git-auto-commit-action@v5
+        run: |
+          git config --global user.name 'Jan-Eric'
+          git config --global user.email 'janericnitschke@users.noreply.github.com'
+          git add .
+          git commit -am "Automated changes."
+          git push
