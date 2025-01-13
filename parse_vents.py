@@ -146,7 +146,7 @@ def main() -> None:
         print(f"Error: The file '{args.file_path}' does not exist.")
         return
     # Example usage
-    vent_file = args.file_path
+    vent_file = Path(args.file_path)
     output_path = vent_file.with_suffix(".json")
     spawns_data = Spawns.from_vents_file(vent_file)
     spawns_data.to_json(path=output_path)
